@@ -13,6 +13,7 @@ const App = () => {
   let nextId = persons.reduce((acc, val)=>Math.max(acc, Number(val.id)), 0) + 1
   useEffect(() => {
     getContacts().then((contacts) => {
+      console.log(contacts)
       setPersons(contacts)
     })
   }, [])
