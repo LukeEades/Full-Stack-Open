@@ -1,26 +1,26 @@
 import axios from "axios"
 
-const URL = "http://localhost:3001"
+const URL = "/api"
 
 const uploadContact = (contact) => {
     return axios
-      .post(URL+"/api/persons", contact)
+      .post(URL+"/persons", contact)
       .then((response)=> response.data)
 }
 const getContacts = () => {
     return axios
-        .get(URL + "/api/persons")
+        .get(URL + "/persons")
         .then((response) => response.data)
 }
 
 const deleteContact = (id) => {
     return axios
-        .delete(`${URL}/api/persons/${id}`)
+        .delete(`${URL}/persons/${id}`)
 }
 
 const replaceContact = (person) => {
     return axios
-        .put(`${URL}/api/persons/${person.id}`, person)
+        .put(`${URL}/persons/${person.id}`, person)
         .then((response) => response.data)
 }
 

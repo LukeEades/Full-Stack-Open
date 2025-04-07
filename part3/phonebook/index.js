@@ -15,6 +15,7 @@ let app = express()
 app.use(express.json())
 app.use(logger)
 app.use(cors())
+app.use(express.static("dist"))
 let phonebook = [
     { 
       "id": "1",
