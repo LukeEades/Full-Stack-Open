@@ -10,7 +10,7 @@ let logger = morgan((tokens, req, res) => {
         tokens.status(req, res),
         tokens.res(req, res, "content-length"), "-",
         tokens["response-time"](req, res), "ms",
-        req.method=="POST"?JSON.stringify(req.body):""
+        req.method ===  "POST"?JSON.stringify(req.body):""
     ].join(" ")
 })
 let app = express()
@@ -20,7 +20,7 @@ app.use(cors())
 app.use(express.static("dist"))
 const MONGODB_URL = process.env.MONGODB_URL
 mongoose.connect(MONGODB_URL)
-    .then(()=> {
+    .then(() => {
         console.log("succesfully connected to mongodb")
     })
     .catch((err) => {
@@ -87,7 +87,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
     let id = request.params.id
     Person.findByIdAndDelete(id)
         .then(() => {
-            response.status(204).end()            
+            response.status(204).end()
         })
         .catch(err => next(err))
 })
@@ -98,7 +98,7 @@ app.put("/api/persons/:id", (request, response, next) => {
         name: request.body.name,
         number: request.body.number,
     }
-    Person.findByIdAndUpdate(id, newPerson, {new: true, runValidators: true})
+    Person.findByIdAndUpdate(id, newPerson, { new: true, runValidators: true })
         .then(person => {
             return response.json(person).end()
         })
@@ -120,10 +120,10 @@ app.post("/api/persons", (request, response, next) => {
         console.log("saved person")
         return response.status(201).json(person).end()
     })
-    .catch(err => next(err))
+        .catch(err => next(err))
 })
 
-const errorHandler = (error, request, response, next) => {
+const errorHandler = (error, request, response) => {
     console.log(error)
     if (error.name === "CastError" || error.name === "ValidationError") {
         return response.status(400).send(error)
@@ -135,5 +135,5 @@ app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-    console.log(`live on port ${PORT}`);
+    console.log(`live on port ${PORT}`)
 })

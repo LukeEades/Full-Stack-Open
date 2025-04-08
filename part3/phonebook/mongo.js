@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 let args = process.argv.slice(2)
-if (args.length == 0) {
+if (args.length === 0) {
     console.log("please supply password")
     return
 }
@@ -16,7 +16,7 @@ const contactSchema = new mongoose.Schema({
     number: String,
 })
 const Contact = mongoose.model("Person", contactSchema)
-if (args.length == 1) {
+if (args.length === 1) {
     // just return all available notes
     Contact.find({}).then(persons => {
         persons.forEach(person => {
@@ -24,7 +24,7 @@ if (args.length == 1) {
         })
         mongoose.connection.close()
     })
-}else if (args.length == 3) {
+}else if (args.length === 3) {
     let name = args[1]
     let number = args[2]
     let contact = Contact({
@@ -32,7 +32,7 @@ if (args.length == 1) {
         number: number,
     })
     contact.save().then(result => {
-        console.log("saved note")
+        console.log("saved note", result)
         mongoose.connection.close()
     })
 } else {
