@@ -4,12 +4,12 @@ const URL = "/api"
 
 const uploadContact = (contact) => {
     return axios
-      .post(URL+"/persons", contact)
+      .post(`${URL}/persons`, contact)
       .then((response)=> response.data)
 }
 const getContacts = () => {
     return axios
-        .get(URL + "/persons")
+        .get(`${URL}/persons`)
         .then((response) => response.data)
 }
 

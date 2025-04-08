@@ -27,29 +27,42 @@ const App = () => {
       if (replace) {
         newContact.id = oldPerson.id
         replaceContact(newContact)
-        let replaced = persons.map((person) => {
-          if (person.name == newName) {
-            person.number = newNumber
-          }
-          return person
-        })
-        document.getElementById('name').value = ''
-        document.getElementById('number').value = ''
-        setNotification({type:'success', message: `Updated ${newName}`})
-        setTimeout(()=>setNotification(null), 2000)
-        setNewName('')
-        setPersons(replaced)
+          .then(person => {
+            let replaced = persons.map((person) => {
+              if (person.name == newName) {
+                person.number = newNumber
+              }
+              return person
+            })
+            document.getElementById('name').value = ''
+            document.getElementById('number').value = ''
+            setNotification({type:'success', message: `Updated ${person.name}`})
+            setTimeout(()=>setNotification(null), 2000)
+            setNewName('')
+            setPersons(replaced)
+          })
+          .catch(err => {
+            setNotification({type: 'error', message: err.response.data.message})
+            setTimeout(()=> setNotification(null), 2000)
+          })
       }
       return
     }
-    newContact.id = String(nextId)
     uploadContact(newContact)
-    setPersons(persons.concat(newContact))
-    setNotification({type: 'success', message: `Added ${newName}`})
-    setTimeout(()=>setNotification(null), 2000)
-    setNewName('')
-    document.getElementById('name').value = ''
-    document.getElementById('number').value = ''
+      .then(person => {
+        setPersons(persons.concat(person))
+        setNotification({type: 'success', message: `Added ${newName}`})
+        setTimeout(()=>setNotification(null), 2000)
+        setNewName('')
+        document.getElementById('name').value = ''
+        document.getElementById('number').value = ''
+      })
+      .catch(err => {
+        console.log(err)
+        let message = String(err.response.data.message)
+        setNotification({type: 'error', message: message})
+        setTimeout(() => setNotification(null), 2000)
+      })
   }
 
   function handleName(event) {
