@@ -1,16 +1,17 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const { MONGODB_URL } = require("./utils/config.js")
+const logger = require("./utils/logger.js")
 const blogRouter = require("./controllers/blog.js")
 
 const app = express()
 
 mongoose.connect(MONGODB_URL)
     .then(() => {
-        console.log("successfully connected to db")
+        logger.info("successfully connected to db")
         })
     .catch(err => {
-        console.log("unable to connect", err)
+        logger.error("was unable to connect to db:", err)
         })
 
 app.use(express.json())

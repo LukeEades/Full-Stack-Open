@@ -1,5 +1,6 @@
 const blogRouter = require("express").Router()
 const Blog = require("../models/blog.js")
+const logger = require("../utils/logger.js")
 
 blogRouter.get("/", (req, res) => {
     // return all the notes
@@ -8,7 +9,7 @@ blogRouter.get("/", (req, res) => {
             res.json(blogs).end()
         })
         .catch(err => {
-            console.log(err)
+            logger.error(err)
         })
 })
 
@@ -20,7 +21,7 @@ blogRouter.post("/", (req, res) => {
             res.json(blog).end()
         })
         .catch(err => {
-            console.log(err)
+            logger.error(err)
         })
 })
 
