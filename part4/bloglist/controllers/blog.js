@@ -1,28 +1,61 @@
 const blogRouter = require("express").Router()
 const Blog = require("../models/blog.js")
-const logger = require("../utils/logger.js")
+const User = require("../models/user.js")
+const { userExtractor } = require("../utils/middleware.js")
 
-blogRouter.get("/", (req, res) => {
+
+blogRouter.get("/", async (req, res, next) => {
     // return all the notes
-    Blog.find({})
-        .then(blogs => {
-            res.json(blogs).end()
-        })
-        .catch(err => {
-            logger.error(err)
-        })
+    try {
+        let blogs = await Blog.find({}).populate("user", {username: true, name: true, id: true})
+        return res.send(blogs).end()
+    } catch (err) {
+        next(err) 
+    }
 })
 
-blogRouter.post("/", (req, res) => {
-    console.log(req.body)
-    let blog = Blog(req.body)
-    blog.save()
-        .then(blog => {
-            res.json(blog).end()
-        })
-        .catch(err => {
-            logger.error(err)
-        })
+blogRouter.post("/", userExtractor, async (req, res, next) => {
+    const user = await User.findOne({ username: req.user.username })
+    let newBlog = new Blog({
+        ...req.body,
+        user: user._id
+    })
+    user.blogs.push(newBlog._id)
+    try {
+        let blog = await newBlog.save()
+        await user.save()
+        res.status(201).json(blog).end()
+    } catch (err) {
+        next(err)
+    }
+})
+
+blogRouter.delete("/:id", userExtractor, async (req, res, next) => {
+    let id = req.params.id
+    let user = req.user
+    try {
+        let blog = await Blog.findById(id)
+        if (!blog) {
+            return res.status(404).end()
+        }
+        if (blog.user.toString() != user.id.toString()) {
+            return res.status(403).end()
+        }
+        await Blog.findByIdAndDelete(id)
+        res.status(204).end()
+    } catch (err) {
+        next(err)
+    }
+})
+
+blogRouter.put("/:id", async (req, res, next) => {
+    let id = req.params.id
+    try {
+        let newBlog = await Blog.findByIdAndUpdate(id, req.body, {new: true})
+        res.json(newBlog).end()
+    } catch (err) {
+        next(err)
+    }
 })
 
 module.exports = blogRouter
