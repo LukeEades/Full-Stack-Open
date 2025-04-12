@@ -33,7 +33,7 @@ const userExtractor = (req, res, next) => {
     try {
         req.user = jwt.verify(token, process.env.SECRET)
     } catch (err) {
-        return res.status(403).end()
+        return res.status(401).end()
     }
     next()
 }

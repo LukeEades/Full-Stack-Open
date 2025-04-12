@@ -8,7 +8,7 @@ loginRouter.post("/", async (req, res) => {
     let user = await User.findOne({ username })
     let match = user != null ? await bcrypt.compare(password, user.password): false
     if (!match) {
-        return res.status(401).send({
+        return res.status(400).send({
             error: "password does not match"
         }).end()
     } 
@@ -22,7 +22,7 @@ loginRouter.post("/", async (req, res) => {
 
     res.status(200)
         .send({
-            token, username: user.username, name: user.name
+            token, username: user.username, name: user.name, id: user._id
         })
 })
 

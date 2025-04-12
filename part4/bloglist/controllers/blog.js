@@ -3,11 +3,11 @@ const Blog = require("../models/blog.js")
 const User = require("../models/user.js")
 const { userExtractor } = require("../utils/middleware.js")
 
-
 blogRouter.get("/", async (req, res, next) => {
     // return all the notes
     try {
-        let blogs = await Blog.find({}).populate("user", {username: true, name: true, id: true})
+        let blogs = await Blog.find({})
+            .populate("user", {username: true, name: true, id: true})
         return res.send(blogs).end()
     } catch (err) {
         next(err) 
@@ -20,9 +20,12 @@ blogRouter.post("/", userExtractor, async (req, res, next) => {
         ...req.body,
         user: user._id
     })
+    console.log(newBlog)
     user.blogs.push(newBlog._id)
     try {
         let blog = await newBlog.save()
+        await blog
+            .populate("user", {username: true, name: true, id: true})
         await user.save()
         res.status(201).json(blog).end()
     } catch (err) {
@@ -48,10 +51,14 @@ blogRouter.delete("/:id", userExtractor, async (req, res, next) => {
     }
 })
 
-blogRouter.put("/:id", async (req, res, next) => {
+blogRouter.put("/:id", userExtractor, async (req, res, next) => {
     let id = req.params.id
     try {
-        let newBlog = await Blog.findByIdAndUpdate(id, req.body, {new: true})
+        let blog = await Blog.findById(id)
+        if (!blog) {
+            return res.status(404).end()
+        }
+        let newBlog = await Blog.findByIdAndUpdate(id, req.body, {new: true}).populate("user", {username: true, name: true, id: true})
         res.json(newBlog).end()
     } catch (err) {
         next(err)
