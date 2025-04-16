@@ -65,4 +65,23 @@ blogRouter.put("/:id", userExtractor, async (req, res, next) => {
     }
 })
 
+blogRouter.post("/:id/comments", async (req, res, next) => {
+    const id = req.params.id
+    const comment = req.body.comment
+    if (!comment) {
+        return res.status(400).end()
+    }
+    try {
+        let blog = await Blog.findById(id)
+        if (!blog) {
+            return res.status(404).end()
+        }
+        blog.comments.push(comment)
+        await blog.save()
+        return res.send(blog).end()
+    } catch (err) {
+        next(err)
+    }
+})
+
 module.exports = blogRouter

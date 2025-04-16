@@ -1,3 +1,4 @@
+import { Button } from "@mui/material"
 import { useState, useImperativeHandle } from "react"
 
 const Toggleable = ({ children, buttonLabel, toggleRef }) => {
@@ -7,13 +8,20 @@ const Toggleable = ({ children, buttonLabel, toggleRef }) => {
   }
   useImperativeHandle(toggleRef, () => {
     return {
-      toggleVisibility
+      toggleVisibility,
     }
   })
   return (
     <div>
       {visible && children}
-      <button className="toggle-button" onClick={() => setVisible(!visible)}>{visible? "hide": buttonLabel}</button>
+      <Button
+        className="toggle-button"
+        variant="contained"
+        size="small"
+        onClick={() => setVisible(!visible)}
+      >
+        {visible ? "hide" : buttonLabel}
+      </Button>
     </div>
   )
 }

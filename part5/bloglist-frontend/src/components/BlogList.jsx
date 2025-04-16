@@ -1,32 +1,27 @@
-import Blog from "./Blog"
-import blogService from "../services/blogs"
+import {
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+} from "@mui/material"
+import { useSelector } from "react-redux"
+import { Link } from "react-router"
 
-const BlogList = ({ blogs, setBlogs, user }) => {
-  const deleteBlog = (blog) => {
-    setBlogs(blogs.filter(listBlog => listBlog.id !== blog.id))
-  }
-  const updateBlog = (oldBlog, newBlog) => {
-    let updated = blogs.map(blog => {
-      if (blog.id === oldBlog.id) {
-        return newBlog
-      }
-      return blog
-    })
-    setBlogs(updated)
-  }
-  const addLike = async oldBlog => {
-    let blogInfo = {
-      ...oldBlog,
-      likes: oldBlog.likes + 1
-    }
-    delete blogInfo.user
-    let newBlog = await blogService.update(blogInfo)
-    updateBlog(oldBlog, newBlog)
-  }
+const BlogList = () => {
+  const blogs = useSelector(items => items.blogs)
   return (
-    <>
-      {blogs.sort((a, b) => b.likes - a.likes).map(blog => <Blog key={blog.id} user={user} blog={blog} deleteBlog={deleteBlog} addLike={addLike}/>)}
-    </>
+    <List>
+      {[...blogs]
+        .sort((a, b) => b.likes - a.likes)
+        .map(blog => (
+          <ListItem key={blog.id}>
+            <Link to={`/blogs/${blog.id}`}>
+              <Typography>{blog.title}</Typography>
+            </Link>
+          </ListItem>
+        ))}
+    </List>
   )
 }
 
